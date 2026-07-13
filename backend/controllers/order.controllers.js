@@ -9,8 +9,8 @@ import { count } from "console"
 
 dotenv.config()
 let instance = new RazorPay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
+    key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_dummykey",
+    key_secret: process.env.RAZORPAY_KEY_SECRET || "dummysecret",
 });
 
 export const placeOrder = async (req, res) => {
@@ -164,6 +164,7 @@ export const verifyPayment = async (req, res) => {
         return res.status(500).json({ message: `verify payment  error ${error}` })
     }
 }
+
 
 
 
@@ -419,16 +420,16 @@ export const getCurrentOrder = async (req, res) => {
             })
 
         if (!assignment) {
-            return res.status(400).json({ message: "assignment not found" })
+            return res.status(200).json(null)
         }
         if (!assignment.order) {
-            return res.status(400).json({ message: "order not found" })
+            return res.status(200).json(null)
         }
 
         const shopOrder = assignment.order.shopOrders.find(so => String(so._id) == String(assignment.shopOrderId))
 
         if (!shopOrder) {
-            return res.status(400).json({ message: "shopOrder not found" })
+            return res.status(200).json(null)
         }
 
         let deliveryBoyLocation = { lat: null, lon: null }
@@ -498,7 +499,13 @@ export const sendDeliveryOtp = async (req, res) => {
         shopOrder.deliveryOtp = otp
         shopOrder.otpExpires = Date.now() + 5 * 60 * 1000
         await order.save()
-        await sendDeliveryOtpMail(order.user, otp)
+        console.log(`[DEBUG] Generated OTP for order ${orderId}: ${otp}`) // Log for testing without email
+        try {
+            await sendDeliveryOtpMail(order.user, otp)
+        } catch (mailError) {
+            console.error("Mail sending failed:", mailError.message)
+            return res.status(500).json({ message: `Mail sending failed: ${mailError.message}. OTP generated was ${otp} (check server console).` })
+        }
         return res.status(200).json({ message: `Otp sent Successfuly to ${order?.user?.fullName}` })
     } catch (error) {
         return res.status(500).json({ message: `delivery otp error ${error}` })

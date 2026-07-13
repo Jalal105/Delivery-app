@@ -84,7 +84,7 @@ function SignUp() {
 
                 <div className='mb-4'>
                     <label htmlFor="mobile" className='block text-gray-700 font-medium mb-1'>Mobile</label>
-                    <input type="email" className='w-full border rounded-lg px-3 py-2 focus:outline-none ' placeholder='Enter your Mobile Number' style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setMobile(e.target.value)} value={mobile} required/>
+                    <input type="tel" className='w-full border rounded-lg px-3 py-2 focus:outline-none ' placeholder='Enter your Mobile Number' style={{ border: `1px solid ${borderColor}` }} onChange={(e)=>setMobile(e.target.value)} value={mobile} required/>
                 </div>
                 {/* password*/}
 
@@ -103,6 +103,7 @@ function SignUp() {
                     <div className='flex gap-2'>
                         {["user", "owner", "deliveryBoy"].map((r) => (
                             <button
+                                key={r}
                                 className='flex-1 border rounded-lg px-3 py-2 text-center font-medium transition-colors cursor-pointer'
                                 onClick={()=>setRole(r)}
                                 style={

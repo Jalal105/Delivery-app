@@ -48,3 +48,4 @@ server.listen(port,()=>{
     console.log(`server started at ${port}`)
 })
 
+// Triggering nodemon restart

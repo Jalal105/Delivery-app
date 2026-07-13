@@ -1,0 +1,17 @@
+//VINGO
+
+password : s7sZKjifRmHJfxjk
+
+
+user : skjalaluddin772_db_user
+
+
+//  Deliver_app
+       
+user:skjalaluddin772_db_user
+
+
+password : CNwvw3W9VvxK8nmd
+
+
+Email  PASS="abcdefghijklmnop"

@@ -1,4 +1,5 @@
 import Shop from "../models/shop.model.js";
+import User from "../models/user.model.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 
 export const createEditShop=async (req,res) => {
@@ -9,14 +10,19 @@ export const createEditShop=async (req,res) => {
         console.log(req.file)
         image=await uploadOnCloudinary(req.file.path)
        } 
+       const user = await User.findById(req.userId);
+       if (!user) {
+           return res.status(404).json({ message: "User not found" });
+       }
+
        let shop=await Shop.findOne({owner:req.userId})
        if(!shop){
         shop=await Shop.create({
-        name,city,state,address,image,owner:req.userId
+        name,city,state,address,image,owner:req.userId,email:user.email
        })
        }else{
          shop=await Shop.findByIdAndUpdate(shop._id,{
-        name,city,state,address,image,owner:req.userId
+        name,city,state,address,image,owner:req.userId,email:user.email
        },{new:true})
        }
       

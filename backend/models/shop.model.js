@@ -14,6 +14,10 @@ const shopSchema=new mongoose.Schema({
         ref:"User",
         required:true
     },
+    email:{
+        type:String,
+        required:true
+    },
     city:{
          type:String,
         required:true

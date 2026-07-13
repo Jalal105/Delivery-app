@@ -9,10 +9,10 @@ export const signUp=async (req,res) => {
         if(user){
             return res.status(400).json({message:"User Already exist."})
         }
-        if(password.length<6){
+        if(!password || password.length<6){
             return res.status(400).json({message:"password must be at least 6 characters."})
         }
-        if(mobile.length<10){
+        if(!mobile || mobile.length<10){
             return res.status(400).json({message:"mobile no must be at least 10 digits."})
         }
      
@@ -28,7 +28,7 @@ export const signUp=async (req,res) => {
         const token=await genToken(user._id)
         res.cookie("token",token,{
             secure:false,
-            sameSite:"strict",
+            sameSite:"lax",
             maxAge:7*24*60*60*1000,
             httpOnly:true
         })
@@ -36,7 +36,7 @@ export const signUp=async (req,res) => {
         return res.status(201).json(user)
 
     } catch (error) {
-        return res.status(500).json(`sign up error ${error}`)
+        return res.status(500).json({message:`sign up error ${error}`})
     }
 }
 
@@ -56,7 +56,7 @@ export const signIn=async (req,res) => {
         const token=await genToken(user._id)
         res.cookie("token",token,{
             secure:false,
-            sameSite:"strict",
+            sameSite:"lax",
             maxAge:7*24*60*60*1000,
             httpOnly:true
         })
@@ -133,17 +133,23 @@ export const resetPassword=async (req,res) => {
 export const googleAuth=async (req,res) => {
     try {
         const {fullName,email,mobile,role}=req.body
+        if(!email){
+            return res.status(400).json({message:"email is required"})
+        }
         let user=await User.findOne({email})
         if(!user){
             user=await User.create({
-                fullName,email,mobile,role
+                fullName: fullName || email.split('@')[0],
+                email,
+                mobile: mobile || '',
+                role: role || 'user'
             })
         }
 
         const token=await genToken(user._id)
         res.cookie("token",token,{
             secure:false,
-            sameSite:"strict",
+            sameSite:"lax",
             maxAge:7*24*60*60*1000,
             httpOnly:true
         })
@@ -152,6 +158,6 @@ export const googleAuth=async (req,res) => {
 
 
     } catch (error) {
-         return res.status(500).json(`googleAuth error ${error}`)
+         return res.status(500).json({message:`googleAuth error ${error}`})
     }
 }
