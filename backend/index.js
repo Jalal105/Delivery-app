@@ -14,15 +14,28 @@ import http from "http"
 import { Server } from "socket.io"
 import { socketHandler } from "./socket.js"
 
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://delivery-app-git-main-skjalaluddin772-4013s-projects.vercel.app",
+    "https://delivery-q8l9xr6fx-skjalaluddin772-4013s-projects.vercel.app"
+]
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+            callback(null, true)
+        } else {
+            callback(new Error("Not allowed by CORS"))
+        }
+    },
+    credentials: true
+}
+
 const app = express()
 const server = http.createServer(app)
 
 const io = new Server(server, {
-    cors: {
-        origin: "https://delivery-app-git-main-skjalaluddin772-4013s-projects.vercel.app",
-        credentials: true,
-        methods: ['POST', 'GET']
-    }
+    cors: corsOptions
 })
 
 app.set("io", io)
@@ -30,10 +43,7 @@ app.set("io", io)
 
 
 const port = process.env.PORT || 5000
-app.use(cors({
-    origin: "https://delivery-app-git-main-skjalaluddin772-4013s-projects.vercel.app",
-    credentials: true
-}))
+app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
 app.use("/api/auth", authRouter)
